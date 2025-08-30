@@ -18,7 +18,6 @@ sitemap: false
 - [{{ p.title }}]({{ p.url | relative_url }})
 {% endfor %}
 
-{% comment %} 其他集合，同样过滤 sitemap:false/published:false {% endcomment %}
 {% for coll in site.collections %}
   {% assign docs = coll.docs
     | where_exp: "d", "d.sitemap != false"
