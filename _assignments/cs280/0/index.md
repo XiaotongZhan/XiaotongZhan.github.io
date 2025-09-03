@@ -48,9 +48,9 @@ In contrast, a **wide-angle lens** (e.g., 24 mm) increases the angular separatio
 ## Part 3: The Dolly Zoom
 
 <div style="text-align: center; margin-bottom: 10px;">
-  <img src="media/part3.gif" alt="移动变焦效果" style="max-width: 100%; height: auto;">
+  <img src="media/part3.GIF" alt="Dolly Zoom" style="max-width: 100%; height: auto;">
 </div>
 
-<p>
+<p>å
 To replicate Dolly Zoom, I used <strong>5 still photos</strong> taken at different focal lengths— from <strong>14mm</strong> (ultra-wide angle) to <strong>136mm</strong> (telephoto).  As I moved the camera backward, I gradually zoomed in with each shot, carefully keeping the subject’s size approximately constant in the frame.
 </p>
