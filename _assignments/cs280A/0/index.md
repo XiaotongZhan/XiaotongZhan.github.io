@@ -9,6 +9,7 @@ comments: false
 share: false
 author_profile: false
 ---
+
 ## Part 1: Selfie: The Wrong Way vs. The Right Way
 <div style="display: flex; gap: 10px;">
   <div style="flex: 1;">
