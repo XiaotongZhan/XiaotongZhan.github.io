@@ -1,10 +1,10 @@
 ---
 title: "Project 0: Becoming Friends with Your Camera"
 collection: assignments
-course: "CS280A"
+course: "CS280"
 type: "Assignment"
 date: 2025-08-29
-permalink: /assignments/cs280a/0/
+permalink: /assignments/cs280/0/
 comments: false
 share: false
 author_profile: false
