@@ -35,8 +35,8 @@ $sidebar-screen-min-width   : 1024px;
 
 /* Dark theme for the site */
 html[data-theme="dark"] {
-    --global-base-color                 : #{$background};
-    --global-bg-color                   : #{$background};
+    --global-base-color                 : #000000;
+    --global-bg-color                   : #000000;
     --global-footer-bg-color            : #{$background};
     --global-border-color               : #{$light-gray};
     --global-dark-border-color          : #{$background-light};
@@ -52,3 +52,27 @@ html[data-theme="dark"] {
     --global-text-color-light           : #f3f3f3;
     --global-thead-color                : #{$background-lighter};
 }
+
+html[data-theme="dark"] {
+  .infocard {
+    background-color: #2f2f2f;
+    border-left: 4px solid #5591ff;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 1em 0;
+    color: #f1f1f1;
+  }
+
+  .infocard-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .infocard-content {
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+}
+
+
