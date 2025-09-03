@@ -1,80 +1,37 @@
 <!-- start custom comments snippet -->
 <div class="giscus"></div>
+<script src="https://giscus.app/client.js"
+        data-repo="XiaotongZhan/XiaotongZhan.github.io"
+        data-repo-id="R_kgDOPmvuTQ"
+        data-category="Comments"
+        data-category-id="DIC_kwDOPmvuTc4Cu6TG"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-input-position="bottom"
+        data-lang="en"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
 
 <script>
-  // 将站点主题映射为 giscus 主题关键词（不要用透明主题，以免变得不可见）
   function mapSiteThemeToGiscus() {
     return document.documentElement.getAttribute('data-theme') === 'dark'
-      ? 'dark_dimmed'  // giscus 深色主题（非透明）
-      : 'light';       // giscus 浅色主题
+      ? 'dark_dimmed'
+      : 'light';
   }
 
-  // 向 giscus iframe 发送主题切换消息
   function setGiscusTheme(theme) {
     const frame = document.querySelector('iframe.giscus-frame');
-    if (!frame) return false;
-    try {
-      frame.contentWindow.postMessage(
-        { giscus: { setConfig: { theme } } },
-        'https://giscus.app'
-      );
-      return true;
-    } catch (e) {
-      return false;
-    }
+    if (!frame) return;
+    frame.contentWindow.postMessage(
+      { giscus: { setConfig: { theme } } },
+      'https://giscus.app'
+    );
   }
 
-  // 等待 giscus iframe 渲染完成后执行回调
-  function whenGiscusReady(cb, tries = 40) { // 最多重试 ~8s（40*200ms）
-    const ok = !!document.querySelector('iframe.giscus-frame');
-    if (ok) return cb();
-    if (tries <= 0) return; // 放弃
-    setTimeout(() => whenGiscusReady(cb, tries - 1), 200);
-  }
-
-  // ——— 首屏：按站点当前主题创建 giscus 脚本，避免首屏主题不一致/闪烁 ———
-  (function injectGiscusWithInitialTheme() {
-    const initialTheme = mapSiteThemeToGiscus();
-    const s = document.createElement('script');
-    s.src = 'https://giscus.app/client.js';
-    s.async = true;
-    s.crossOrigin = 'anonymous';
-
-    // —— 必填参数（按你的仓库/分类）——
-    s.setAttribute('data-repo', 'XiaotongZhan/XiaotongZhan.github.io');
-    s.setAttribute('data-repo-id', 'R_kgDOPmvuTQ');
-    s.setAttribute('data-category', 'Comments');
-    s.setAttribute('data-category-id', 'DIC_kwDOPmvuTc4Cu6TG');
-
-    // 其它参数
-    s.setAttribute('data-mapping', 'pathname');
-    s.setAttribute('data-strict', '0');
-    s.setAttribute('data-reactions-enabled', '1');
-    s.setAttribute('data-emit-metadata', '0');
-    s.setAttribute('data-input-position', 'bottom');
-    s.setAttribute('data-lang', 'en');
-
-    // 用当前站点主题作为 giscus 初始主题（不要用 preferred_color_scheme）
-    s.setAttribute('data-theme', initialTheme);
-
-    document.querySelector('.giscus').appendChild(s);
-  })();
-
-  // ——— 监听 <html data-theme> 变化，任何来源的切换都能同步到 giscus ———
-  (function observeThemeAndSyncGiscus() {
-    const htmlEl = document.documentElement;
-    const sync = () => whenGiscusReady(() => setGiscusTheme(mapSiteThemeToGiscus()));
-
-    // 页面加载完/iframe 就绪后，同步一次
-    whenGiscusReady(() => setGiscusTheme(mapSiteThemeToGiscus()));
-
-    // 监听 data-theme 属性变化（你的按钮或其他脚本更改时触发）
-    new MutationObserver(sync).observe(htmlEl, { attributes: true, attributeFilter: ['data-theme'] });
-
-    // 保险：监听系统配色变化（若你代码允许跟随系统）
-    try {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', sync);
-    } catch (e) {}
-  })();
+  new MutationObserver(() => {
+    setGiscusTheme(mapSiteThemeToGiscus());
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 </script>
 <!-- end custom comments snippet -->
