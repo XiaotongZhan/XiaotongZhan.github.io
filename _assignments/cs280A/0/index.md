@@ -7,6 +7,7 @@ date: 2025-08-29
 permalink: /assignments/cs280a/0/
 comments: false
 share: false
+author_profile: false
 ---
 ## Part 1: Selfie: The Wrong Way vs. The Right Way
 <div style="display: flex; gap: 10px;">
