@@ -17,3 +17,33 @@
 </script>
 
 <!-- end custom footer snippets -->
+
+<!-- === BEGIN: Copy Button Script === -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.code-wrapper').forEach(function (block, index) {
+    const id = `code-${index}`;
+    block.setAttribute('id', id);
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.setAttribute('data-clipboard-target', `#${id} code`);
+    block.appendChild(btn);
+  });
+
+  new ClipboardJS('.copy-btn').on('success', function(e) {
+    const btn = e.trigger;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1000);
+  });
+});
+</script>
+
+<!-- jQuery (Required by Lightbox2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Lightbox2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
+<!-- === END: Copy Button Script === -->

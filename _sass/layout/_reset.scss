@@ -22,16 +22,23 @@ html {
 
 body { margin: 0; }
 
-/* Selected elements */
-
+/* Selected elements - system-like highlight */
 ::-moz-selection {
-  color: #fff;
-  background: #000;
+  background: #B4D7FE;  /* macOS 风格浅蓝 */
+  // color: #000;          /* 黑字更易读 */
 }
 
 ::selection {
-  color: #fff;
-  background: #000;
+  background: #B4D7FE;
+  // color: #000;
+}
+
+/* 暗夜模式 - 用更柔和的透明蓝 */
+html[data-theme="dark"] ::selection {
+  background: rgba(180, 215, 254, 0.4);
+}
+html[data-theme="dark"] ::-moz-selection {
+  background: rgba(180, 215, 254, 0.4);
 }
 
 /* Display HTML5 elements in IE6-9 and FF3 */

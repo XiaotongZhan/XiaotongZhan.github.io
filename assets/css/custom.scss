@@ -1,0 +1,20 @@
+.code-wrapper {
+  position: relative;
+}
+
+.copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background-color: #eaeaea;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.code-wrapper:hover .copy-button {
+  background-color: #d0d0d0;
+}

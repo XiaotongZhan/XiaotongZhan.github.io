@@ -15,3 +15,69 @@
 <meta name="theme-color" content="#ffffff"/>
 
 <!-- end custom head snippets -->
+
+<!-- === BEGIN: Custom HEAD for Code Copy Button + Font Styling === -->
+
+<!-- Load Clipboard.js for copy button -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
+
+<!-- Optional: Load Fira Code font for prettier monospace rendering -->
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+
+<!-- Code block + copy button styling -->
+<style>
+/* Code font style */
+code, pre, .highlight code, .highlight pre {
+  font-family: "Fira Code", "SFMono-Regular", "Consolas", "Menlo", monospace !important;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre;
+  word-break: normal;
+  margin: 0;
+}
+
+/* Inline code styling */
+p code {
+  padding: 2px 6px;
+  font-size: 13px;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+/* Wrapper around code block to hold the copy button */
+.code-wrapper {
+  position: relative;
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+}
+
+/* Copy button styling */
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background-color: transparent;       /* ✅ transparent background */
+  color: #4CAF50;                      /* ✅ green text */
+  border: 1px solid #4CAF50;           /* ✅ green border */
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10;
+}
+.copy-btn:hover {
+  opacity: 1.0;
+}
+</style>
+
+<!-- === END: Custom HEAD === -->
+ 
+<!-- Lightbox2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+
+<!-- Optional Font for Code Blocks -->
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
