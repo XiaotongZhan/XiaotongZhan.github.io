@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.textContent = 'Copy';
     btn.setAttribute('data-clipboard-target', `#${id} code`);
     block.appendChild(btn);
+
+    block.classList.add('has-copy');
   });
 
   new ClipboardJS('.copy-btn').on('success', function(e) {
@@ -39,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
 
 <!-- jQuery (Required by Lightbox2) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

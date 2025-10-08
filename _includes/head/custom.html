@@ -2,82 +2,93 @@
 
 <!-- start custom head snippets -->
 
-<!-- Support for Academicons -->
-<link rel="stylesheet" href="{{ base_path }}/assets/css/academicons.css"/>
+<!-- Academicons (仅当你用到学术图标时再开启) -->
+<!-- <link rel="stylesheet" href="{{ base_path }}/assets/css/academicons.css" /> -->
 
-<!-- favicon from https://commons.wikimedia.org/wiki/File:OOjs_UI_icon_academic-progressive.svg -->
-<link rel="apple-touch-icon" sizes="180x180" href="{{ base_path }}/images/apple-touch-icon-180x180.png"/>
-<link rel="icon" type="image/svg+xml" href="{{ base_path }}/images/favicon.svg"/>
-<link rel="icon" type="image/png" href="{{ base_path }}/images/favicon-32x32.png" sizes="32x32"/>
-<link rel="icon" type="image/png" href="{{ base_path }}/images/favicon-192x192.png" sizes="192x192"/>
-<link rel="manifest" href="{{ base_path }}/images/manifest.json"/>
-<link rel="icon" href="/images/favicon.ico"/>
-<meta name="theme-color" content="#ffffff"/>
+<!-- Favicons（建议统一用 base_path；保留一套足够） -->
+<link rel="icon" type="image/svg+xml" href="{{ base_path }}/images/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="{{ base_path }}/images/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="{{ base_path }}/images/favicon-192x192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="{{ base_path }}/images/apple-touch-icon-180x180.png" />
+<!-- 去掉可能 404 的根路径 favicon -->
+<!-- <link rel="icon" href="/images/favicon.ico" /> -->
+<!-- PWA 不需要可删除 -->
+<!-- <link rel="manifest" href="{{ base_path }}/images/manifest.json" /> -->
 
-<!-- end custom head snippets -->
+<meta name="theme-color" content="#ffffff" />
 
-<!-- === BEGIN: Custom HEAD for Code Copy Button + Font Styling === -->
+<!-- Lightbox2 CSS（你页面用到了就保留） -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet" />
 
-<!-- Load Clipboard.js for copy button -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
+<!-- Fira Code monospace（去重，保留一份） -->
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet" />
 
-<!-- Optional: Load Fira Code font for prettier monospace rendering -->
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
-
-<!-- Code block + copy button styling -->
+<!-- 代码样式与复制按钮的基础样式（深浅色自适应） -->
 <style>
-/* Code font style */
-code, pre, .highlight code, .highlight pre {
-  font-family: "Fira Code", "SFMono-Regular", "Consolas", "Menlo", monospace !important;
-  font-size: 14px;
-  line-height: 1.6;
-  white-space: pre;
-  word-break: normal;
-  margin: 0;
-}
 
-/* Inline code styling */
-p code {
-  padding: 2px 6px;
-  font-size: 13px;
-  background-color: #eee;
-  border-radius: 4px;
-}
+  /* Code font */
+  code, pre, .highlight code, .highlight pre {
+    font-family: "Fira Code", "SFMono-Regular", Consolas, Menlo, monospace !important;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre;
+    word-break: normal;
+    margin: 0;
+  }
 
-/* Wrapper around code block to hold the copy button */
-.code-wrapper {
-  position: relative;
-  overflow-x: auto;
-  padding: 12px;
-  border-radius: 6px;
-  background-color: #f7f7f7;
-}
+  /* Inline code */
+  p code {
+    padding: 2px 6px;
+    font-size: 13px;
+    background-color: #eee;
+    border-radius: 4px;
+  }
 
-/* Copy button styling */
-.copy-btn {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  background-color: transparent;       /* ✅ transparent background */
-  color: #4CAF50;                      /* ✅ green text */
-  border: 1px solid #4CAF50;           /* ✅ green border */
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  cursor: pointer;
-  opacity: 0.85;
-  transition: opacity 0.2s ease-in-out;
-  z-index: 10;
-}
-.copy-btn:hover {
-  opacity: 1.0;
-}
+  /* Code wrapper (light) */
+  .code-wrapper {
+    position: relative;
+    overflow-x: auto;
+    padding: 12px;
+    border-radius: 6px;
+    background-color: #f7f7f7;
+  }
+
+  /* Dark mode adaptation */
+  @media (prefers-color-scheme: dark) {
+    p code { background-color: #2a2a2a; }
+    .code-wrapper { background-color: #1e1e1e; }
+  }
+
+  /* Copy button (样式保留，可选) */
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background-color: transparent;
+    color: #2e2d2d;
+    border: 1px solid #2e2d2d;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+  }
+
+  .copy-btn:hover { opacity: 1; }
+
+  /* 隐藏代码语言/装饰徽标，避免与 Copy 重叠 */
+  [class*="language-"].highlighter-rouge::before,
+  [class*="language-"].highlighter-rouge::after,
+  .highlighter-rouge > .highlight::before,
+  .highlighter-rouge > .highlight::after {
+    content: none !important;
+    display: none !important;
+  }
 </style>
 
-<!-- === END: Custom HEAD === -->
- 
-<!-- Lightbox2 CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+<!-- Clipboard.js for copy buttons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" defer></script>
 
-<!-- Optional Font for Code Blocks -->
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+<!-- end custom head snippets -->

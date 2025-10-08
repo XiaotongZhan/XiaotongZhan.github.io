@@ -1,3 +1,49 @@
-<script type="module" src="{{ base_path }}/assets/js/main.min.js"></script>
+<script type="module" src="{{ base_path }}/assets/js/main.min.js" defer></script>
 
 {% include analytics.html %}
+
+<!-- Lightbox2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js" defer></script>
+
+<script defer>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.code-wrapper').forEach(function (wrap) {
+    if (wrap.querySelector('.copy-btn')) return; // already has one
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    wrap.appendChild(btn);
+    wrap.classList.add('has-copy');
+
+    btn.addEventListener('click', async function () {
+      const code = wrap.querySelector('pre code');
+      if (!code) return;
+
+      // 获取纯文本（保留换行）
+      const text = code.innerText || code.textContent || '';
+
+      // 优先使用现代异步剪贴板
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          // 回退：选区复制
+          const range = document.createRange();
+          range.selectNodeContents(code);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand('copy');
+          sel.removeAllRanges();
+        }
+        btn.textContent = 'Copied!';
+      } catch (e) {
+        btn.textContent = 'Failed';
+        console.error('Copy failed:', e);
+      } finally {
+        setTimeout(() => (btn.textContent = 'Copy'), 1200);
+      }
+    });
+  });
+});
+</script>
