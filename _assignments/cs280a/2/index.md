@@ -1,10 +1,10 @@
 ---
 title: "Project 2: Fun with Filters and Frequencies!"
 collection: assignments
-course: "CS280"
+course: "CS280A"
 type: "Assignment"
 date: 2025-09-26
-permalink: /assignments/cs280/2/
+permalink: /assignments/cs280a/2/
 comments: true
 share: false
 author_profile: false
@@ -17,10 +17,12 @@ sidebar: false
 
 First, let's recap what a convolution is. Implement it with four for loops, then two for loops.
 
-<details>
+<details markdown="1">
 <summary>Click to expand code</summary>
-<div class="highlight code-wrapper">
-<pre><code class="language-python">import numpy as np
+<div class="highlight code-wrapper" markdown="1">
+
+```python
+import numpy as np
 
 def conv2d_four_loops(image, kernel):
     H, W = image.shape
@@ -54,9 +56,8 @@ def conv2d_two_loops(image, kernel):
             region = padded[y:y+kH, x:x+kW]
             output[y, x] = np.sum(region * kernel)
     return output
-</code></pre>
+```
 </div>
-
 </details>
 
 {% include infocard.html title="Compare it with a built-in convolution function scipy.signal.convolve2d" content="In this experiment, we first manually implemented the 2D convolution function using two approaches: one with four nested for-loops and another with two nested for-loops, both employing zero padding to handle boundaries.
@@ -67,10 +68,12 @@ Therefore, our implementation is more intuitive and closer to the mathematical d
 
 Write out a 9x9 box filter, and convolve the picture with the box filter. Do it with the finite difference operators Dx and Dy.
 
-<details>
+<details markdown="1">
 <summary>Click to expand code</summary>
-<div class="highlight code-wrapper">
-<pre><code class="language-python"># 9x9 box filter
+<div class="highlight code-wrapper" markdown="1">
+
+```python
+# 9x9 box filter
 box9 = np.ones((9,9)) / 81.0
 smoothed = conv2d_two_loops(img, box9)
 
@@ -79,9 +82,8 @@ Dx = np.array([[1, -1]])
 Dy = np.array([[1], [-1]])
 grad_x = conv2d_two_loops(img, Dx)
 grad_y = conv2d_two_loops(img, Dy)
-</code></pre>
+```
 </div>
-
 </details>
 
 <div style="text-align: center;">
@@ -249,8 +251,10 @@ This allows us to see how low-frequency and high-frequency information are separ
 </p>
 
 
-<div class="highlight code-wrapper">
-<pre><code class="language-python">def compute_fft(img, title, ax):
+<div class="highlight code-wrapper" markdown="1">
+
+```python
+def compute_fft(img, title, ax):
     if img.shape[-1] == 4:
         img = img[..., :3]
     gray = rgb2gray(img)
@@ -260,7 +264,7 @@ This allows us to see how low-frequency and high-frequency information are separ
     ax.imshow(magnitude_spectrum, cmap='gray')
     ax.set_title(title)
     ax.axis('off')
-</code></pre>
+  ```
 </div>
 
 <!-- Hybrid frequency visualization -->
@@ -339,10 +343,11 @@ Example 2:
 • <strong>High Only</strong>: The texture of the cat remains vivid and detailed when viewed up close, and the low-frequency grayscale background avoids visual clutter. This version produces the clearest perceptual separation between the two images.
 " %}
 
-<details>
+<details markdown="1">
 <summary>Click to expand code</summary>
-<div class="highlight code-wrapper">
-<pre><code class="language-python">
+<div class="highlight code-wrapper" markdown="1">
+
+```python
 def hybrid_image(im_high, im_low, sigma_high, sigma_low, color_mode='both'):
     """
     Generate a hybrid image by combining high-frequency and low-frequency components.
@@ -386,7 +391,7 @@ def hybrid_image(im_high, im_low, sigma_high, sigma_low, color_mode='both'):
     # Combine and clip to valid range
     hybrid = np.clip(im_low_f + high_f, 0, 1)
     return hybrid
-</code></pre>
+```
 </div>
 </details>
 
@@ -417,10 +422,12 @@ Finally, the original image can be reconstructed by summing all levels of the La
   </p>
 </div>
 
-<details>
+<details markdown="1">
 <summary>Click to expand code</summary>
-<div class="highlight code-wrapper">
-<pre><code class="language-python">def gaussian_stack(img, levels, sigma=2):
+<div class="highlight code-wrapper" markdown="1">
+
+```python
+def gaussian_stack(img, levels, sigma=2):
     """
     Build a Gaussian stack (no downsampling).
     Each level is the same size, just more blurred.
@@ -458,7 +465,7 @@ def reconstruct_from_laplacian(l_stack):
     else:
         img = np.zeros_like(img)
     return img
-</code></pre>
+```
 </div>
 </details>
 
@@ -511,8 +518,9 @@ and
 
 I extend the blending to color images by performing multiresolution blending channel by channel, enhancing perceptual quality.
 
-<div class="highlight code-wrapper">
-<pre><code class="language-python">
+<div class="highlight code-wrapper" markdown="1">
+
+```python
 def multires_blend_color(img1, img2, mask, levels=5):
     """
     Perform multiresolution blending on each color channel separately.
@@ -540,5 +548,5 @@ def multires_blend_color(img1, img2, mask, levels=5):
     blended_img = np.stack(blended_channels, axis=2)
     blended_img = np.clip(blended_img, 0, 1)
     return blended_img
-</code></pre>
+```
 </div>

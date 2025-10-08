@@ -1,10 +1,10 @@
 ---
 title: "Project 1: Colorizing the Prokudin-Gorskii Photo Collection"
 collection: assignments
-course: "CS280"
+course: "CS280A"
 type: "Assignment"
 date: 2025-09-12
-permalink: /assignments/cs280/1/
+permalink: /assignments/cs280a/1/
 comments: true
 share: false
 author_profile: false

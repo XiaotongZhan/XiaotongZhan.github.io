@@ -1,10 +1,10 @@
 ---
-title: "Project 3A: IMAGE WARPING and MOSAICING"
+title: "Project 3A: Image Warping and Mosaicing"
 collection: assignments
-course: "CS280"
+course: "CS280A"
 type: "Assignment"
 date: 2025-10-7
-permalink: /assignments/cs280/3/
+permalink: /assignments/cs280a/3/
 comments: true
 share: false
 author_profile: false
