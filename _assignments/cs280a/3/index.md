@@ -14,7 +14,7 @@ toc: true
 
 # Part A: Image Warping and Mosaicing
 
-## Part A.1: Shoot the Pictures
+## A.1: Shoot the Pictures
 
 To begin our journey into image mosaicing, the first step was capturing the right images—not just any snapshots, but a carefully curated set of photographs taken under geometric constraints.
 
@@ -81,7 +81,7 @@ Below are two image sets I captured (three photos per set, displayed in one row 
 
 
 
-## Part A.2: Recover Homographies
+## A.2: Recover Homographies
 
 <p>
 Once the photographs are captured, the next challenge is to <strong>understand the geometric relationship</strong> between them. Since the images are taken from a fixed center of projection, the transformation between any two images can be modeled using a <strong>homography</strong> — a 3×3 matrix that maps points from one image plane to another under projective geometry.
@@ -105,7 +105,10 @@ To recover \( H \), I constructed a linear system from the correspondences and s
 
 ### Choosing Point Correspondences
 
-Picking reliable point pairs is essential — even slight pixel misalignments can degrade the final transformation quality. To assist with this, I used an excellent [point selection tool](https://cal-cs180.github.io/fa23/hw/proj3/tool.html), which allows clicking and exporting matched points across images. Here are some alternative tools: online tools: [pixspy](https://pixspy.com), or any image editing software that displays cursor coordinates (e.g., GIMP, Photoshop).
+Picking reliable point pairs is essential — even slight pixel misalignments can degrade the final transformation quality. To assist with this, I used an excellent <a href="https://cal-cs180.github.io/fa23/hw/proj3/tool.html" target="_blank" rel="noopener noreferrer">point selection tool</a>, which allows clicking and exporting matched points across images. 
+
+Here are some alternative tools: online tools such as <a href="https://pixspy.com" target="_blank" rel="noopener noreferrer">pixspy</a>, or any image editing software that displays cursor coordinates (e.g., GIMP, Photoshop).
+
 
 > **Good correspondences should be:**
 >
@@ -342,7 +345,7 @@ To validate the accuracy of point selection and computed homographies, I visuali
 </div>
 
 
-## Part A.3: Warp the Images
+## A.3: Warp the Images
 
 <p>
 With homographies estimated from point correspondences, the next step in the image mosaicing pipeline is to <strong>warp each image into a common reference frame</strong>. This geometric transformation allows the images to be properly aligned and eventually stitched together.
@@ -580,7 +583,7 @@ Overall, the homography and warping pipeline work as expected: planar regions (c
 </p>
 
 
-## Part A.4: Blend the Images into a Mosaic
+## A.4: Blend the Images into a Mosaic
 
 <p>
 After aligning each photograph through geometric warping, the final step is to <strong>blend them into a single, seamless mosaic</strong>. This process transforms a collection of individually warped images into one continuous panoramic view—removing visible seams and ensuring smooth transitions across overlapping regions.
@@ -895,7 +898,7 @@ def mosaic_three(mid_path, left_path, right_path, H_left2mid_path, H_right2mid_p
 {% include infocard.html title="A.4 Takeaways" content="Feathering with distance-transform weights removes hard seams;<br>One-shot blending on a shared canvas simplifies bookkeeping and reduces compounding errors;<br>Laplacian pyramids fix low-frequency mismatches while preserving edges;<br><strong>Summary</strong>: Weighted blending + multi-resolution fusion yields seamless panoramas even with exposure/edge mismatches." %}
 
 
-## Part A.5: Cylindrical Projection
+## A.5: Cylindrical Projection
 
 <p>
 When panoramas are captured by <strong>pure yaw</strong> about a fixed center, projecting each view onto a <strong>cylinder</strong> (radius = focal length \(f\)) reduces stretching near the periphery and keeps vertical lines straight. Instead of stitching on a plane, we <strong>map every image to cylindrical coordinates</strong> and do alignment/blending there; the cylinder is then “unrolled” to a 2D canvas \((u,v)\).
@@ -1327,3 +1330,290 @@ Two datasets, each shown with three outputs (Left+Middle, Middle+Right, Left+Mid
 
 
 # Part B: Feature Matching for Autostitching
+
+In this part of the project, I implemented a simplified version of the method described in the paper 
+<a href="https://graphics.cs.cmu.edu/courses/15-463/2006_fall/www/Papers/MOPS.pdf" target="_blank">“Multi-Image Matching using Multi-Scale Oriented Patches”</a> by Brown, Szeliski & Winder.
+
+## B.1: Harris Corner Detection
+
+### Harris Corner Detection
+
+I started with the **classic Harris corner detector** (as described in Brown et al.), using a single fixed scale and without aiming for subpixel precision.  
+
+{% include infocard.html title="Key Concept" content="Harris corner detection identifies points with high intensity variation in both x and y directions.<br>These locations are typically found by analyzing the local gradient covariance matrix and computing the response function \( R = \det(M) - k(\text{trace}(M))^2 \)." %}
+
+---
+
+### Adaptive Non-Maximal Suppression (ANMS)
+
+Raw Harris detection often yields **dense clusters of corners** in highly textured regions while leaving other areas sparsely represented.  
+To achieve **better spatial distribution**, I implemented **Adaptive Non-Maximal Suppression (ANMS)**, following Section 3 of the Brown et al. paper.
+
+<p>
+The key idea:
+</p>
+
+1. For each detected corner, compute a **suppression radius** — the distance to the nearest corner that has a significantly stronger response.
+2. A corner with a **large suppression radius** is locally dominant over a wider area.
+3. **Sort** all corners by suppression radius and **select the top N** for subsequent matching and descriptor computation.
+
+<p style="text-align: center; font-size: 0.95em; margin: 8px 0 4px;">Set 1 (middle) — Harris vs ANMS</p>
+<div style="max-width: 1100px; margin: 10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B1_harris_set1_middle.png" data-lightbox="B1_set1" data-title="Before ANMS (Raw Harris)">
+        <img src="figures/B1_harris_set1_middle.png" alt="Before ANMS (Raw Harris)" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">Before ANMS (Raw Harris)</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B1_anms_set1_middle.png" data-lightbox="B1_set1" data-title="After ANMS">
+        <img src="figures/B1_anms_set1_middle.png" alt="After ANMS" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">After ANMS</p>
+    </div>
+  </div>
+</div>
+
+
+## B.2: Feature Descriptor Extraction
+
+Having selected a well-distributed set of interest points, the next step is to build feature descriptors for those points so we can match them across images. I implemented feature descriptor extraction following **Section 4** of Brown et al. (with simplifications):
+
+- Ignore rotation invariance; extract **axis-aligned 8×8 patches** around each interest point.
+- Sample patches from a larger **40×40 window** (downsampled/blurred for stability).
+- Apply **bias/gain normalization** (zero mean, unit variance) to mitigate illumination changes.
+- Skip the wavelet transform step in the paper.
+
+<p style="text-align: center; font-size: 0.95em; margin: 8px 0 4px;">Feature Points and 8×8 Descriptions</p>
+
+<div style="max-width: 950px; margin: 0 auto; text-align: center;">
+  <a href="figures/B2_features_set1_middle.png" data-lightbox="B2_set1" data-title="Five feature points (Set 1)">
+    <img src="figures/B2_features_set1_middle.png" alt="Five feature points" style="width:90%; border-radius:6px; margin-top:10px;" />
+  </a>
+  <p style="font-size:0.8em; margin-top:4px;">Five feature points (Set 1)</p>
+
+  <a href="figures/B2_patches_set1_middle.png" data-lightbox="B2_set1" data-title="Corresponding 8×8 patches (Set 1)">
+    <img src="figures/B2_patches_set1_middle.png" alt="Corresponding 8×8 patches" style="width:90%; border-radius:6px; margin-top:20px;" />
+  </a>
+  <p style="font-size:0.8em; margin-top:4px;">Corresponding 8×8 patches (Set 1)</p>
+</div>
+
+## B.3: Feature Matching
+
+After extracting normalized 8×8 feature descriptors in **Part B.2**, the next step is to **find correspondences** between features across different images (Section 5 of Brown et al.).
+
+### Methodology
+
+To establish reliable matches, I compared descriptors from one image against those from another using **L2 distance** in descriptor space.  
+For each feature in image A, I found its **two nearest neighbors** in image B and applied the **Lowe ratio test** (Lowe, 2004). A match was accepted only if:
+
+<p>\[
+\frac{d_1}{d_2} < \tau
+\]</p>
+
+where \( d_1 \) and \( d_2 \) are distances to the first and second nearest neighbors, respectively. I set **\( \tau = 0.75 \)** (following Figure 6b in Brown et al.).  
+This ratio criterion keeps **distinct, unambiguous matches**, filtering out false correspondences from repetitive textures or noise.  
+Optionally, I also applied a **mutual consistency check** that requires the match to be reciprocal between the two images.
+
+### Results
+
+After applying the ratio test, I visualized the surviving correspondences by **drawing lines connecting matched keypoints** across the image pair.
+
+<div style="text-align:center;">
+  <a href="figures/B3_matches_set1_left_middle.png" data-lightbox="B3_set1" data-title="Feature matches after Lowe ratio test (τ = 0.75)">
+    <img src="figures/B3_matches_set1_left_middle.png" alt="Feature matches after Lowe ratio test (τ = 0.75)" style="width:90%;max-width:950px;border-radius:6px;margin-top:10px;" />
+  </a>
+  <p style="font-size:0.9em;margin-top:6px;">Feature matches after Lowe ratio test (τ = 0.75)</p>
+</div>
+
+## B.4: RANSAC for Robust Homography Estimation
+
+Building on the feature correspondences obtained in **Part B.3**, the next step is to compute a **robust homography** that can handle mismatched or noisy feature pairs.
+
+### Methodology
+
+Given the potentially noisy descriptor matches, I applied a **4-point RANSAC** algorithm to estimate the homography \( H \) between each image pair.
+
+At each iteration:
+
+1. **Randomly sample** four correspondences to compute a candidate homography using the **Direct Linear Transform (DLT)** method.  
+2. **Reproject** all remaining points via \( H \) and count the number of **inliers** whose reprojection error falls below a fixed threshold  
+   <p>\[
+   \tau = 3.0 \text{ pixels.}
+   \]</p>
+3. Keep the homography with the **largest inlier count** as the best model.  
+4. Finally, **refine \( H \)** by re-estimating it using all detected inliers.
+
+This robust procedure effectively rejects outlier matches that would otherwise distort the alignment.
+
+{% include infocard.html title="RANSAC Overview" content="RANSAC (Random Sample Consensus) iteratively estimates a model from minimal random subsets, scores by inlier count, and refits on the consensus set.<br><strong>Benefit:</strong> Robust to 30–50% outliers and essential for reliable homography estimation in real images." %}
+
+### Results
+
+Using the refined homographies, I warped and blended multiple images into a shared reference frame, reusing the **feathered averaging mosaic pipeline** developed in **Part A**.
+
+The RANSAC-based approach dramatically improved alignment quality—producing **cleaner, more seamless mosaics** even when feature matches were imperfect.
+
+<p style="text-align:center; font-size:0.95em; margin:8px 0 4px;">Set 1 — Full Mosaic (Left–Middle–Right)</p>
+<div style="max-width:1100px; margin:10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B4_auto_set1_all.png" data-lightbox="B4_set1_all" data-title="RANSAC-based automatic mosaic — Set 1 (LMR)">
+        <img src="figures/B4_auto_set1_all.png" alt="RANSAC-based mosaic Set 1 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">RANSAC-based automatic mosaic</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/plane_set1_mosaic_LMR.png" data-lightbox="B4_set1_all" data-title="Manual alignment reference — Set 1 (LMR)">
+        <img src="figures/plane_set1_mosaic_LMR.png" alt="Manual alignment reference Set 1 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">Manual alignment reference</p>
+    </div>
+  </div>
+</div>
+
+---
+
+<p style="text-align:center; font-size:0.95em; margin:8px 0 4px;">Set 1 — Pairwise (Left–Middle)</p>
+<div style="max-width:1100px; margin:10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B4_auto_set1_pair.png" data-lightbox="B4_set1_pair" data-title="RANSAC-based automatic pair mosaic — Set 1 (L–M)">
+        <img src="figures/B4_auto_set1_pair.png" alt="RANSAC-based mosaic Set 1 pair" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">RANSAC-based automatic pair mosaic</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/plane_set1_mosaic_left_middle.png" data-lightbox="B4_set1_pair" data-title="Manual alignment reference — Set 1 (L–M)">
+        <img src="figures/plane_set1_mosaic_left_middle.png" alt="Manual alignment reference Set 1 pair" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">Manual alignment reference</p>
+    </div>
+  </div>
+</div>
+
+---
+
+<p style="text-align:center; font-size:0.95em; margin:8px 0 4px;">Set 2 — Full Mosaic (Left–Middle–Right)</p>
+<div style="max-width:1100px; margin:10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B4_auto_set2_all.png" data-lightbox="B4_set2_all" data-title="RANSAC-based automatic mosaic — Set 2 (LMR)">
+        <img src="figures/B4_auto_set2_all.png" alt="RANSAC-based mosaic Set 2 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">RANSAC-based automatic mosaic</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/plane_set2_mosaic_LMR.png" data-lightbox="B4_set2_all" data-title="Manual alignment reference — Set 2 (LMR)">
+        <img src="figures/plane_set2_mosaic_LMR.png" alt="Manual alignment reference Set 2 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">Manual alignment reference</p>
+    </div>
+  </div>
+</div>
+
+
+## B.5: Multiscale Corner Detection and Feature Description (Bells & Whistles)
+
+To further enhance the robustness of the matching pipeline, I extended the system to support **multiscale processing** for both corner detection and feature description.
+
+### Methodology
+
+In the original single-scale Harris detector, all features are extracted from the image at one fixed resolution. This limits sensitivity to a specific spatial frequency range—small details (like text or window edges) are well detected, but larger structural patterns (such as building outlines or distant objects) may be missed.
+
+To achieve **scale robustness**, I implemented a **multiscale feature detection pipeline** based on a **Gaussian pyramid** representation:
+
+1. Constructed a **three-level image pyramid**, where each level was downsampled by a factor of two and pre-smoothed with a Gaussian filter to suppress aliasing.
+2. Ran the **Harris corner detector** and **Adaptive Non-Maximal Suppression (ANMS)** independently at each level to identify scale-specific distinctive points.
+3. **Rescaled all detected points** back to the coordinate system of the original image to maintain consistency.
+4. Merged candidate keypoints from all levels and applied a **global ANMS step** to ensure a uniform and balanced spatial-scale distribution.
+5. For each final keypoint, extracted a **40×40 intensity patch** from the appropriate pyramid level, then downsampled and **bias/gain-normalized** it to an **8×8 descriptor**, maintaining compatibility with the previous pipeline.
+
+{% include infocard.html title="Why Multiscale?" content="Single-scale detection tends to favor a specific type of structure and becomes unstable under scale changes (zoom or viewpoint distance).<br>Multiscale processing, by detecting and merging corners across a Gaussian pyramid at different resolutions, captures both <strong>fine textures</strong> and <strong>large structural edges</strong>, improving matching coverage and robustness." %}
+
+### Outcome
+
+This multiscale extension makes the system **more robust to scale variations** across images. It captures both fine-grained and large-scale structures, improving keypoint coverage and stability. Consequently, **feature matching and RANSAC-based homography estimation** become noticeably more reliable when aligning images with significant zoom or perspective differences.
+
+
+The following visualization shows the detected keypoints at multiple scales. Note how features are distributed across fine and coarse structures, capturing both small textures and large object boundaries.
+
+<p style="text-align: center; font-size: 0.95em; margin: 8px 0 4px;">Multiscale Features — Set 1 & Set 2</p>
+<div style="max-width: 1100px; margin: 10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B5_multiscale_features_set1_middle.png" data-lightbox="B5_ms_features" data-title="Multiscale features — Set 1">
+        <img src="figures/B5_multiscale_features_set1_middle.png" alt="Multiscale features — Set 1" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">Set 1 — Multiscale features</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B5_multiscale_features_set2_middle.png" data-lightbox="B5_ms_features" data-title="Multiscale features — Set 2">
+        <img src="figures/B5_multiscale_features_set2_middle.png" alt="Multiscale features — Set 2" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; margin-top:4px; text-align:center;">Set 2 — Multiscale features</p>
+    </div>
+  </div>
+</div>
+
+The following comparison directly contrasts the single-scale (Part B.4) and multiscale (Part B.5) results.
+While both use RANSAC for homography estimation, the multiscale pipeline produces denser and more stable correspondences, leading to smoother and better-aligned mosaics.
+
+<p style="text-align:center; font-size:0.95em; margin:8px 0 4px;">Set 1 — Full Mosaic (Left–Middle–Right)</p>
+<div style="max-width:1100px; margin:10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B4_auto_set1_all.png" data-lightbox="B5_compare_set1_all" data-title="Single-scale mosaic — Set 1 (LMR)">
+        <img src="figures/B4_auto_set1_all.png" alt="Single-scale mosaic Set 1 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; text-align:center; margin-top:4px;">Single-scale (Part B.4)</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B5_MS_set1_all.png" data-lightbox="B5_compare_set1_all" data-title="Multiscale mosaic — Set 1 (LMR)">
+        <img src="figures/B5_MS_set1_all.png" alt="Multiscale mosaic Set 1 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; text-align:center; margin-top:4px;">Multiscale (Part B.5)</p>
+    </div>
+  </div>
+</div>
+
+---
+
+<p style="text-align:center; font-size:0.95em; margin:8px 0 4px;">Set 1 — Pairwise (Left–Middle)</p>
+<div style="max-width:1100px; margin:10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B4_auto_set1_pair.png" data-lightbox="B5_compare_set1_pair" data-title="Single-scale pair mosaic — Set 1 (L–M)">
+        <img src="figures/B4_auto_set1_pair.png" alt="Single-scale mosaic Set 1 pair" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; text-align:center; margin-top:4px;">Single-scale (Part B.4)</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B5_MS_set1_left_middle.png" data-lightbox="B5_compare_set1_pair" data-title="Multiscale pair mosaic — Set 1 (L–M)">
+        <img src="figures/B5_MS_set1_left_middle.png" alt="Multiscale mosaic Set 1 pair" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; text-align:center; margin-top:4px;">Multiscale (Part B.5)</p>
+    </div>
+  </div>
+</div>
+
+---
+
+<p style="text-align:center; font-size:0.95em; margin:8px 0 4px;">Set 2 — Full Mosaic (Left–Middle–Right)</p>
+<div style="max-width:1100px; margin:10px auto;">
+  <div style="display:flex; justify-content:center; gap:20px; flex-wrap:nowrap;">
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B4_auto_set2_all.png" data-lightbox="B5_compare_set2_all" data-title="Single-scale mosaic — Set 2 (LMR)">
+        <img src="figures/B4_auto_set2_all.png" alt="Single-scale mosaic Set 2 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; text-align:center; margin-top:4px;">Single-scale (Part B.4)</p>
+    </div>
+    <div style="width: calc((100% - 20px)/2);">
+      <a href="figures/B5_MS_set2_all.png" data-lightbox="B5_compare_set2_all" data-title="Multiscale mosaic — Set 2 (LMR)">
+        <img src="figures/B5_MS_set2_all.png" alt="Multiscale mosaic Set 2 LMR" style="width:100%; border-radius:6px;" />
+      </a>
+      <p style="font-size:0.8em; text-align:center; margin-top:4px;">Multiscale (Part B.5)</p>
+    </div>
+  </div>
+</div>
