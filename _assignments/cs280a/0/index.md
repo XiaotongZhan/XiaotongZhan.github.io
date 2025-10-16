@@ -8,7 +8,8 @@ permalink: /assignments/cs280a/0/
 comments: true
 share: false
 author_profile: false
-sidebar: false
+layout: assignments_page
+toc: false
 ---
 
 ## Part 1: Selfie: The Wrong Way vs. The Right Way

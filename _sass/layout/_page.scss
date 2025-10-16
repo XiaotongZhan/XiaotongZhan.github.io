@@ -34,6 +34,108 @@
   }
 }
 
+.page.page--toc {
+  @include breakpoint($large) {
+    float: none;
+    width: 100%;
+    max-width: calc(760px + 260px + 2.5rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.page__body {
+  margin: 0 auto;
+  max-width: 760px;
+
+  .page__content {
+    width: 100%;
+  }
+
+  .page__toc {
+    display: none;
+  }
+}
+
+.page__body--toc {
+  @include breakpoint($large) {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.5rem;
+    max-width: calc(760px + 260px + 2.5rem);
+  }
+
+  .page__content {
+    @include breakpoint($large) {
+      flex: 0 0 760px;
+    }
+  }
+
+  .page__toc {
+    @include breakpoint($large) {
+      display: block;
+      flex: 0 0 260px;
+      position: relative;
+    }
+
+    nav.toc {
+      @include breakpoint($large) {
+        position: sticky;
+        top: $masthead-height + 20px;
+      }
+    }
+  }
+}
+
+.page {
+  @include breakpoint($large) {
+    @include span(10 of 12 last);
+    @include prefix(0.5 of 12);
+    @include suffix(2 of 12);
+  }
+
+  .page__inner-wrap {
+    @include full();
+
+    .page__content,
+    .page__meta,
+    .page__share {
+      @include full();
+    }
+  }
+}
+
+.page__body {
+  display: block;
+
+  @include breakpoint($large) {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+
+  .page__content {
+    flex: 0 1 760px;
+    max-width: 760px;
+    width: 100%;
+  }
+
+  .page__toc {
+    display: none;
+
+    @include breakpoint($large) {
+      display: block;
+      flex: 0 0 260px;
+      position: sticky;
+      top: $masthead-height + 20px;
+    }
+
+    nav.toc {
+      position: static;
+    }
+  }
+}
+
 .page__title {
   margin-top: 0;
   line-height: 1;

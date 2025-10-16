@@ -60,19 +60,11 @@
   }
 }
 
-.sidebar__right {
-  margin-bottom: 1em;
+.sidebar__toc {
+  margin-top: 2rem;
 
-  @include breakpoint($large) {
-    position: relative;
-    float: right;
-    width: $right-sidebar-width-narrow;
-    margin-left: span(0.5 of 12);
-    z-index: 10;
-  }
-
-  @include breakpoint($x-large) {
-    width: $right-sidebar-width;
+  nav.toc {
+    position: static;
   }
 }
 

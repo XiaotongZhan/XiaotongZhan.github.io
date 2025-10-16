@@ -1,0 +1,8 @@
+{%- assign h_min = include.h_min | default: 2 -%}
+{%- assign h_max = include.h_max | default: 6 -%}
+{%- assign title = include.title | default: site.data.ui-text[site.locale].toc_label | default: "On this page" -%}
+
+<nav class="toc" data-h-min="{{ h_min }}" data-h-max="{{ h_max }}">
+  <header><h4 class="nav__title">{{ title }}</h4></header>
+  <ul class="toc__menu"></ul>
+</nav>

@@ -1,5 +1,5 @@
 ---
-title: "Project 3A: Image Warping and Mosaicing"
+title: "Project 3: Stitching Photo Mosaics"
 collection: assignments
 course: "CS280A"
 type: "Assignment"
@@ -8,10 +8,13 @@ permalink: /assignments/cs280a/3/
 comments: true
 share: false
 author_profile: false
-sidebar: false
+layout: assignments_page
+toc: true
 ---
 
-# Part A.1: Shoot the Pictures
+# Part A: Image Warping and Mosaicing
+
+## Part A.1: Shoot the Pictures
 
 To begin our journey into image mosaicing, the first step was capturing the right images—not just any snapshots, but a carefully curated set of photographs taken under geometric constraints.
 
@@ -78,7 +81,7 @@ Below are two image sets I captured (three photos per set, displayed in one row 
 
 
 
-# Part A.2: Recover Homographies
+## Part A.2: Recover Homographies
 
 <p>
 Once the photographs are captured, the next challenge is to <strong>understand the geometric relationship</strong> between them. Since the images are taken from a fixed center of projection, the transformation between any two images can be modeled using a <strong>homography</strong> — a 3×3 matrix that maps points from one image plane to another under projective geometry.
@@ -100,7 +103,7 @@ Here, \( \mathbf{p} \) and \( \mathbf{p'} \) represent the homogeneous coordinat
 To recover \( H \), I constructed a linear system from the correspondences and solved it via <strong>least squares</strong>. While four correspondences suffice theoretically, using more than eight improves stability in the presence of noise.
 </p>
 
-## Choosing Point Correspondences
+### Choosing Point Correspondences
 
 Picking reliable point pairs is essential — even slight pixel misalignments can degrade the final transformation quality. To assist with this, I used an excellent [point selection tool](https://cal-cs180.github.io/fa23/hw/proj3/tool.html), which allows clicking and exporting matched points across images. Here are some alternative tools: online tools: [pixspy](https://pixspy.com), or any image editing software that displays cursor coordinates (e.g., GIMP, Photoshop).
 
@@ -111,7 +114,7 @@ Picking reliable point pairs is essential — even slight pixel misalignments ca
 > * Preferably located on **planar surfaces** for better geometric consistency
 
 
-## Homography Estimation code implementation
+### Homography Estimation code implementation
 
 To estimate ( H ), I implemented the following function:
 
@@ -182,7 +185,7 @@ def computeH(im1_pts, im2_pts):
 </div>
 </details>
 
-## Deriving the Linear System
+### Deriving the Linear System
 <p>
 We estimate a homography \( \mathbf{H} \) that maps \( \mathbf{p} = (x, y, 1)^{\mathrm{T}} \) to \( \mathbf{p}' = (x', y', 1)^{\mathrm{T}} \) up to scale:
 </p>
@@ -236,11 +239,11 @@ To improve numerical stability, I applied <strong>Hartley normalization</strong>
 followed by rescaling such that \( H_{33} = 1 \).
 </p>
 
-## Recovered Homography Matrices
+### Recovered Homography Matrices
 
 Below are the recovered homography matrices for two image sets:
 
-### **Set 1**
+#### **Set 1**
 
 1.1 Left to Middle:
 <p>\[
@@ -268,7 +271,7 @@ H_{\text{right}\rightarrow\text{mid}} =
 > **Reprojection Error**:  
 > Mean = 2.231 px Median = 2.314 px 95th Percentile = 3.726 px Max = 4.030 px
 
-### **Set 2**
+#### **Set 2**
 
 2.1 Left to Middle
 <p>\[
@@ -297,7 +300,7 @@ H_{\text{right}\rightarrow\text{mid}} =
 > Mean = 4.229 px Median = 3.543 px 95th Percentile = 8.598 px Max = 9.822 px
 
 
-## Visualization of Correspondences
+### Visualization of Correspondences
 
 To validate the accuracy of point selection and computed homographies, I visualized the correspondences as follows:
 
@@ -339,7 +342,7 @@ To validate the accuracy of point selection and computed homographies, I visuali
 </div>
 
 
-# Part A.3: Warp the Images
+## Part A.3: Warp the Images
 
 <p>
 With homographies estimated from point correspondences, the next step in the image mosaicing pipeline is to <strong>warp each image into a common reference frame</strong>. This geometric transformation allows the images to be properly aligned and eventually stitched together.
@@ -349,7 +352,7 @@ With homographies estimated from point correspondences, the next step in the ima
 To achieve this, I implemented two versions of <strong>image warping</strong>, both based on the idea of <strong>inverse warping</strong>—a method that maps each pixel in the output image back to a location in the source image. This approach avoids the common issue of holes or missing pixels in the warped result.
 </p>
 
-## Two Interpolation Methods
+### Two Interpolation Methods
 
 I implemented two classic interpolation techniques from scratch to compare their performance and visual quality:
 
@@ -365,11 +368,11 @@ I implemented two classic interpolation techniques from scratch to compare their
     A more refined technique: instead of rounding, we compute a <strong>weighted average of the four surrounding pixels</strong> in the source image. This leads to <strong>smoother transitions</strong> and more natural-looking results, at the cost of slightly higher computation.
     </p>
 
-## Implementation
+### Implementation
 
 <p>The following functions were implemented to perform image warping using each interpolation method:</p>
 
-### Nearest Neighbor Interpolation
+#### Nearest Neighbor Interpolation
 
 <details markdown="1">
 <summary>Click to expand code: <p style="display:inline;margin:0;"><code>warpImageNearestNeighbor(im, H)</code></p></summary>
@@ -431,7 +434,7 @@ def warpImageNearestNeighbor(im, H):
 </div>
 </details>
 
-### Bilinear Interpolation
+#### Bilinear Interpolation
 
 <details markdown="1">
 <summary>Click to expand code: <p style="display:inline;margin:0;"><code>warpImageBilinear(im, H)</code></p></summary>
@@ -475,7 +478,7 @@ def warpImageBilinear(im, H):
 </div>
 </details>
 
-### Corner Picker for Homography & Rectification
+#### Corner Picker for Homography & Rectification
 
 <details markdown="1">
 <summary>Click to expand code: <p style="display:inline;margin:0;"><code>pick_four_corners(img_path)</code></p></summary>
@@ -511,7 +514,7 @@ src_pts = pick_four_corners("your_figure_path")
 </div>
 </details>
 
-## Applying Homographies: Image Rectification
+### Applying Homographies: Image Rectification
 
 <p>
 To evaluate the visual difference between the two interpolation schemes, I applied both methods to rectify two images using manually chosen homographies:
@@ -532,7 +535,7 @@ To evaluate the visual difference between the two interpolation schemes, I appli
 </div>
 
 
-## Results & Comparisons
+### Results & Comparisons
 
 1. Checkerboard Rectification
 
@@ -556,7 +559,7 @@ To evaluate the visual difference between the two interpolation schemes, I appli
     The nearest result shows aliasing on text strokes and high-contrast edges. Bilinear interpolation significantly improves <strong>readability</strong> and <strong>edge smoothness</strong>, with mild softening.
     </p>
 
-### Trade-offs
+#### Trade-offs
 
 <ul>
   <li>Nearest neighbor is roughly <strong>2× faster</strong> and useful for quick debugging or previews, but it <strong>amplifies aliasing</strong> under strong foreshortening or down-sampling.</li>
@@ -577,7 +580,7 @@ Overall, the homography and warping pipeline work as expected: planar regions (c
 </p>
 
 
-# Part A.4: Blend the Images into a Mosaic
+## Part A.4: Blend the Images into a Mosaic
 
 <p>
 After aligning each photograph through geometric warping, the final step is to <strong>blend them into a single, seamless mosaic</strong>. This process transforms a collection of individually warped images into one continuous panoramic view—removing visible seams and ensuring smooth transitions across overlapping regions.
@@ -587,7 +590,7 @@ After aligning each photograph through geometric warping, the final step is to <
 A naive approach would be to simply <strong>overlay</strong> one warped image on top of another. However, this creates <strong>harsh boundaries</strong> in the overlapping areas, which breaks the illusion of continuity. Instead, this part focuses on <strong>smooth image blending</strong>, where each image contributes to the final result via carefully designed weights.
 </p>
 
-## Weighted Averaging and Alpha Blending
+### Weighted Averaging and Alpha Blending
 
 <p>
 One of the simplest and most effective techniques is <strong>weighted averaging</strong> (also called feathering). Each pixel's contribution is controlled by an <strong>alpha map</strong>, which specifies how strongly that image influences each part of the mosaic.
@@ -603,7 +606,7 @@ One of the simplest and most effective techniques is <strong>weighted averaging<
 <strong>Tip:</strong> To build such masks, I used a <strong>distance transform</strong> to compute pixelwise distances from the nearest invalid pixel, producing a natural falloff from the center.
 </blockquote>
 
-## One-Shot vs. Incremental Mosaicing
+### One-Shot vs. Incremental Mosaicing
 
 <p>There are two common paradigms for blending:</p>
 
@@ -614,7 +617,7 @@ One of the simplest and most effective techniques is <strong>weighted averaging<
 For one-shot blending, predicting the <strong>final canvas size</strong> is essential. I did this by transforming all corner points of each image into the reference frame, then computing the union of their bounding boxes.
 </p>
 
-## Advanced Blending with Pyramids
+### Advanced Blending with Pyramids
 
 <p>
 Feathering works well, but when image intensities differ across exposures or edges misalign slightly, it can still produce faint seams. To solve this, I implemented <strong>multi-resolution blending</strong> using <strong>Laplacian pyramids</strong>. This approach:
@@ -628,11 +631,11 @@ Feathering works well, but when image intensities differ across exposures or edg
 
 <p>Even a <strong>two-level pyramid</strong> can make a large difference in visual quality.</p>
 
-## Planar Mosaicing — Procedure
+### Planar Mosaicing — Procedure
 
 <p>The following outlines my step-by-step process for planar image mosaicing, using the middle image as the reference frame:</p>
 
-### 1) Choose Reference & Homographies
+#### 1) Choose Reference & Homographies
 
 <ul>
   <li>Set the <strong>middle image</strong> as the reference plane (identity transform).</li>
@@ -640,7 +643,7 @@ Feathering works well, but when image intensities differ across exposures or edg
   <li>All warps are defined <strong>source → reference</strong> (internally use \( H^{-1} \) for inverse mapping).</li>
 </ul>
 
-### 2) Predict the Global Canvas
+#### 2) Predict the Global Canvas
 
 <ul>
   <li>Transform the four corners of each image using their respective homographies.</li>
@@ -684,7 +687,7 @@ def _global_bbox_and_offsets(mid_img, left_img=None, right_img=None, H_l2m=None,
 </div>
 </details>
 
-### 3) Inverse Warp the Side Images
+#### 3) Inverse Warp the Side Images
 
 <ul>
   <li>Use <strong>bilinear inverse warping</strong> (from A.3) to warp left and right images into the reference frame.</li>
@@ -697,7 +700,7 @@ def _global_bbox_and_offsets(mid_img, left_img=None, right_img=None, H_l2m=None,
   </li>
 </ul>
 
-### 4) Feathering Weights
+#### 4) Feathering Weights
 
 <ul>
   <li>Use a <strong>distance transform</strong> on each alpha mask to compute smooth weights:
@@ -724,7 +727,7 @@ def _feather_from_alpha(alpha):
 </div>
 </details>
 
-### 5) Weighted Blending
+#### 5) Weighted Blending
 
 <ul>
   <li>Initialize accumulators:
@@ -828,14 +831,14 @@ def mosaic_three(mid_path, left_path, right_path, H_left2mid_path, H_right2mid_p
 </div>
 </details>
 
-### 6) Output and Visualization
+#### 6) Output and Visualization
 
 <ul>
   <li>The final mosaic is written to disk.</li>
   <li>Optional steps include visual inspection and auto-cropping of black borders for a cleaner result.</li>
 </ul>
 
-## Visual Results
+### Visual Results
 
 <p>Below are results from two sets of images, each visualized at two blending stages:</p>
 
@@ -892,19 +895,19 @@ def mosaic_three(mid_path, left_path, right_path, H_left2mid_path, H_right2mid_p
 {% include infocard.html title="A.4 Takeaways" content="Feathering with distance-transform weights removes hard seams;<br>One-shot blending on a shared canvas simplifies bookkeeping and reduces compounding errors;<br>Laplacian pyramids fix low-frequency mismatches while preserving edges;<br><strong>Summary</strong>: Weighted blending + multi-resolution fusion yields seamless panoramas even with exposure/edge mismatches." %}
 
 
-# Part A.5: Cylindrical Projection
+## Part A.5: Cylindrical Projection
 
 <p>
 When panoramas are captured by <strong>pure yaw</strong> about a fixed center, projecting each view onto a <strong>cylinder</strong> (radius = focal length \(f\)) reduces stretching near the periphery and keeps vertical lines straight. Instead of stitching on a plane, we <strong>map every image to cylindrical coordinates</strong> and do alignment/blending there; the cylinder is then “unrolled” to a 2D canvas \((u,v)\).
 </p>
 
-## Principle
+### Principle
 
 <p>
 For pure horizontal rotation about a shared center, a cylinder of radius \(f\) better matches pinhole geometry: vertical lines remain straight while horizontal directions bend smoothly, mitigating the extreme-field distortions of planar projection.
 </p>
 
-### Forward & Inverse Mappings
+#### Forward & Inverse Mappings
 
 <p>
 Let the image principal point be \((c_x, c_y)\). For a pixel \((x, y)\), define:
@@ -956,17 +959,17 @@ During resampling we use the <em>inverse mapping</em> to avoid holes: each desti
 </p>
 
 
-## Cylindrical Mosaicing — Procedure
+### Cylindrical Mosaicing — Procedure
 
 <p>The following outlines my step-by-step process for cylindrical mosaicing, where all images are first mapped to a cylinder (radius \(f\)), aligned/blended in \((u,v)\), and finally unrolled to a 2D canvas.</p>
 
-### 1) Project Correspondences to the Cylinder
+#### 1) Project Correspondences to the Cylinder
 
 <ul>
   <li>Map A.2 correspondences \((x,y)\) to \((u,v)\) using <code>xy_to_uv_cyl</code>, so that alignment is performed directly in the cylindrical domain.</li>
 </ul>
 
-### 2) Estimate Alignment Transforms (on Cylinder)
+#### 2) Estimate Alignment Transforms (on Cylinder)
 
 <ul>
   <li>On \((u,v)\), estimate the side→middle homography \(T\) (often close to a translation) with <code>computeH</code>:
@@ -977,7 +980,7 @@ During resampling we use the <em>inverse mapping</em> to avoid holes: each desti
 </ul>
 
 
-### 3) Predict the Global Cylindrical Canvas
+#### 3) Predict the Global Cylindrical Canvas
 
 <ul>
   <li>Project the four corners of each image to \((u,v)\) with the cylindrical mapping.</li>
@@ -991,7 +994,7 @@ During resampling we use the <em>inverse mapping</em> to avoid holes: each desti
 </ul>
 
 
-### 4) Single-Resample Inverse Sampling (from Originals)
+#### 4) Single-Resample Inverse Sampling (from Originals)
 
 <ul>
   <li>Use inverse mapping so each cylinder pixel \((U,V)\) samples a subpixel \((x,y)\) in the original image (avoids holes).</li>
@@ -1008,7 +1011,7 @@ For each global \( (U,V) \):<br>
 <p>This performs only one resampling pass to avoid cascading blur.</p>
 
 
-### 5) Feathered Blending
+#### 5) Feathered Blending
 
 <ul>
   <li>Build weights \(w_i\) from valid masks (e.g., distance transform) and accumulate:</li>
@@ -1268,7 +1271,7 @@ def mosaic_cylindrical_three(
 </div>
 </details>
 
-## Visual Results
+### Visual Results
 
 Two datasets, each shown with three outputs (Left+Middle, Middle+Right, Left+Middle+Right), all aligned and blended in the cylindrical domain:
 
@@ -1323,3 +1326,4 @@ Two datasets, each shown with three outputs (Left+Middle, Middle+Right, Left+Mid
 </div>
 
 
+# Part B: Feature Matching for Autostitching

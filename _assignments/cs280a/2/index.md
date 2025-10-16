@@ -9,6 +9,8 @@ comments: true
 share: false
 author_profile: false
 sidebar: false
+layout: assignments_page
+toc: true
 ---
 
 # Part 1: Fun with Filters

@@ -8,8 +8,10 @@ permalink: /assignments/cs280a/1/
 comments: true
 share: false
 author_profile: false
-sidebar: false
+layout: assignments_page
+toc: false
 ---
+
 <head>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>

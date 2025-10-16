@@ -44,19 +44,61 @@
     border-radius: 4px;
   }
 
-  /* Code wrapper (light) */
+  /* Code wrapper */
   .code-wrapper {
     position: relative;
     overflow-x: auto;
     padding: 12px;
     border-radius: 6px;
-    background-color: #f7f7f7;
+    background-color: var(--code-wrapper-bg, #f7f7f7);
+    border: 1px solid var(--code-wrapper-border, #e0e0e0);
   }
 
-  /* Dark mode adaptation */
-  @media (prefers-color-scheme: dark) {
-    p code { background-color: #2a2a2a; }
-    .code-wrapper { background-color: #1e1e1e; }
+  /* Dark theme variables */
+  html[data-theme="dark"] {
+    --code-wrapper-bg: #1e1e1e;
+    --code-wrapper-border: #333;
+  }
+
+  html[data-theme="dark"] p code {
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+  }
+
+  html[data-theme="dark"] .code-wrapper {
+    background-color: var(--code-wrapper-bg);
+    border-color: var(--code-wrapper-border);
+  }
+
+  html[data-theme="dark"] .highlight {
+    background: none;
+  }
+
+  html[data-theme="dark"] .highlight,
+  html[data-theme="dark"] .highlight pre,
+  html[data-theme="dark"] pre,
+  html[data-theme="dark"] pre code {
+    background-color: var(--code-wrapper-bg);
+    color: #f5f5f5;
+  }
+
+  html[data-theme="dark"] .highlight pre span {
+    color: inherit;
+  }
+
+  /* Dark theme TOC */
+  html[data-theme="dark"] .toc {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid #444;
+  }
+
+  html[data-theme="dark"] .toc .nav__title,
+  html[data-theme="dark"] .toc a {
+    color: #f5f5f5;
+  }
+
+  html[data-theme="dark"] .toc a:hover {
+    color: #8fc9ff;
   }
 
   /* Copy button (样式保留，可选) */
@@ -77,6 +119,24 @@
   }
 
   .copy-btn:hover { opacity: 1; }
+
+  html[data-theme="dark"] .copy-btn {
+    color: #f5f5f5;
+    border-color: #f5f5f5;
+  }
+
+  /* Remove inner Rouge frame when wrapped by custom container */
+  .code-wrapper > .highlighter-rouge {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .code-wrapper > .highlighter-rouge::before {
+    display: none;
+  }
 
   /* 隐藏代码语言/装饰徽标，避免与 Copy 重叠 */
   [class*="language-"].highlighter-rouge::before,
