@@ -3,7 +3,7 @@ title: "Project 3: Stitching Photo Mosaics"
 collection: assignments
 course: "CS280A"
 type: "Assignment"
-date: 2025-10-7
+date: 2025-10-16
 permalink: /assignments/cs280a/3/
 comments: true
 share: false
