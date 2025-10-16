@@ -1411,8 +1411,8 @@ For each feature in image A, I found its **two nearest neighbors** in image B an
 <p>\[
 \frac{d_1}{d_2} < \tau
 \]</p>
-
-where \( d_1 \) and \( d_2 \) are distances to the first and second nearest neighbors, respectively. I set **\( \tau = 0.75 \)** (following Figure 6b in Brown et al.).  
+<p>
+where \( d_1 \) and \( d_2 \) are distances to the first and second nearest neighbors, respectively. I set \( \tau = 0.75 \) (following Figure 6b in Brown et al.). </p>
 This ratio criterion keeps **distinct, unambiguous matches**, filtering out false correspondences from repetitive textures or noise.  
 Optionally, I also applied a **mutual consistency check** that requires the match to be reciprocal between the two images.
 
