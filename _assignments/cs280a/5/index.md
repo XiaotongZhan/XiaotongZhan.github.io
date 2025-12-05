@@ -2496,6 +2496,64 @@ This allows:
 Together, these modifications transform the UNet into a fully **time- and class-aware flow model**.
 
 
+## **2.5 — Training the Class-Conditioned UNet**
+
+After extending the UNet to accept both the timestep (t) and a class label (c), I trained the **class-conditioned flow-matching model** following Algorithm B.3 from the handout.
+
+The training loop is almost identical to the time-only model, except that each sample now provides a label and I apply **classifier-free guidance dropout**, randomly zeroing the class vector with probability:
+
+<p>\[
+p_{\text{uncond}} = 0.1 .
+\]</p>
+
+---
+
+### **Training Procedure**
+
+For each iteration:
+
+1. **Sample a clean MNIST digit** (x_1) together with its class label.
+
+2. Convert the label into a **one-hot vector** (c).
+
+3. Apply classifier-free guidance dropout:
+
+   <p>\[
+   c \leftarrow 
+   \begin{cases}
+   c, & \text{with probability } 0.9,\\[4pt]
+   0, & \text{with probability } 0.1.
+   \end{cases}
+   \]</p>
+
+4. Sample pure noise (x_0 \sim \mathcal{N}(0, I)), draw a random timestep (t \sim \text{Uniform}(0,1)), and construct the interpolated point:
+
+   <p>\[
+   x_t = (1 - t)\,x_0 + t\,x_1 .
+   \]</p>
+
+5. Train the UNet to predict the flow:
+
+   <p>\[
+   u_\theta(x_t, t, c)\;\approx\; x_1 - x_0.
+   \]</p>
+
+All other hyperparameters—optimizer, learning rate schedule, dataset handling, and batch size—match the earlier flow-matching experiments.
+
+---
+
+### **Training Curve**
+
+<div style="text-align:center; margin-top:12px;">
+  <a href="figures/class_unet_training_loss.png" data-lightbox="class-unet" data-title="Training loss curve for the class-conditioned UNet">
+    <img src="figures/class_unet_training_loss.png" alt="Class-conditioned UNet training loss" style="width:90%; max-width:850px; border-radius:6px;" />
+  </a>
+  <p style="font-size:0.9em; margin-top:6px;">
+    The loss decreases smoothly over training, confirming that the UNet successfully learns to incorporate class information into the predicted flow field.
+  </p>
+</div>
+
+
 ## **Part 2.6 — Sampling from the Class-Conditioned UNet**
 
 With the class-conditioned UNet trained in **Part 2.5**, I generated MNIST samples using the **class-conditional sampling algorithm (Algorithm B.4)**.
